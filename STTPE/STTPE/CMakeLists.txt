@@ -4,7 +4,8 @@
 cmake_minimum_required (VERSION 3.8)
 
 # 이 프로젝트의 실행 파일에 소스를 추가합니다.
-add_executable (STTPE "STTPE.cpp" "STTPE.h")
+file(GLOB STTPE_SRC "*.h" "*.cpp")
+add_executable (STTPE ${STTPE_SRC})
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET STTPE PROPERTY CXX_STANDARD 20)
