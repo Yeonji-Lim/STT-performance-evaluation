@@ -1,7 +1,7 @@
 import kss
 import re
 
-f = open("test/확진자급감_test.txt", 'r')
+f = open("data/확진자급감_test.txt", 'r')
 s = f.read().replace("\n", "")
 regex = "\(.*\)|\s-\s.*"
 re.sub(regex, '', s)
