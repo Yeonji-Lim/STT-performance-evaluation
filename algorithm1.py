@@ -28,20 +28,28 @@ matrix = [[0 for col in range(lenResult)] for row in range(2)]
 a = n1
 b = n2
 tranLen = lenResult
-
 while tranLen > 0:
-    if a == 0 or b == 0:
-        break
-    if dp[a][b] == dp[a-1][b]:
-        matrix[0][tranLen - 1] = list1[a - 1]
-        matrix[1][tranLen - 1] = -1
-        tranLen -= 1
-        a -= 1
-    elif dp[a][b] == dp[a][b-1]:
+    if dp[a][b] == 0:
+        while b > 0 and tranLen > 0:
+            matrix[0][tranLen - 1] = list2[b - 1]
+            matrix[1][tranLen - 1] = 1
+            tranLen -= 1
+            b -= 1
+        while a > 0 and tranLen > 0:
+            matrix[0][tranLen - 1] = list1[a - 1]
+            matrix[1][tranLen - 1] = -1
+            tranLen -= 1
+            a -= 1
+    elif dp[a][b] == dp[a][b - 1]:
         matrix[0][tranLen - 1] = list2[b - 1]
         matrix[1][tranLen - 1] = 1
         tranLen -= 1
         b -= 1
+    elif dp[a][b] == dp[a - 1][b]:
+        matrix[0][tranLen - 1] = list1[a - 1]
+        matrix[1][tranLen - 1] = -1
+        tranLen -= 1
+        a -= 1
     else:
         matrix[0][tranLen - 1] = list1[a - 1]
         matrix[1][tranLen - 1] = 0
@@ -53,13 +61,13 @@ number = 0
 for t in matrix[0]:
     if matrix[1][number] == 0:
         number += 1
-        print(t + ' ', end='')
+        print(t, end=' ')
     elif matrix[1][number] == 1:
         number += 1
-        print('\033[34m' + t + ' ', end='' + '\033[0m')
+        print('\033[34m' + t + '\033[0m', end=' ')
     else:
         number += 1
-        print('\033[31m' + t + ' ', end='' + '\033[0m')
+        print('\033[31m' + t + '\033[0m', end=' ')
 
 
 
