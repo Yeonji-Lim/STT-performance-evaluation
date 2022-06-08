@@ -12,6 +12,8 @@ class HashTable:
         for index, word in enumerate(words):
             hash = self.hashValue(word)
             self.add(hash, word, index)
+        # self.print()
+        # print()
 
     def hashValue(self, word):
         word_byte = word.encode('utf-8')
