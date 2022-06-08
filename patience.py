@@ -3,8 +3,11 @@ from HashTable import HashTable
 target_file = open("target.txt", 'r')
 test_file = open("test.txt", 'r')
 
-target_words = target_file.read().split()
-test_words = test_file.read().split()
+# target_words = target_file.read().split()
+# test_words = test_file.read().split()
+
+target_words = "john is holly".split()
+test_words = "holly jeongje john".split() #순서가 바뀌는 경우.. 못잡
 
 table_size = 997
 target_table = HashTable(table_size)
@@ -52,7 +55,7 @@ target_arr = merge_sort(target_arr)
 # for i in range(len(target_arr)):
 #     print(target_arr[i][0], target_arr[i][1])
 
-result_words = ["" for _ in range(len(test_words))]
+result_words = ["" for _ in range(len(target_words))]
 visited_target = [False for _ in range(len(target_words))]
 visited_test = [False for _ in range(len(test_words))]
 
@@ -72,9 +75,9 @@ for hash, num in target_arr:
         if isAllEqual(target_bucket) and isAllEqual(test_bucket): 
             for node in target_bucket:
                 visited_target[node.index] = True
+                result_words[node.index] = node.word
             for node in test_bucket:
                 visited_test[node.index] = True
-                result_words[node.index] = node.word
             continue
            
         # 142 우리 112 따라 140
@@ -83,9 +86,9 @@ for hash, num in target_arr:
         for i, node in enumerate(target_bucket) :
             if node.word != test_bucket[i].word:
                 break
+            result_words[node.index] = node.word
             visited_target[node.index] = True
             visited_test[test_bucket[i].index] = True
-            result_words[test_bucket[i].index] = test_bucket[i].word
 
 print()
 print(" ".join(result_words))
