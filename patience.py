@@ -1,48 +1,91 @@
-from LinkedList import LinkedList
-from Dic import Dic
+from HashTable import HashTable
 
 target_file = open("target.txt", 'r')
 test_file = open("test.txt", 'r')
 
-# target = target_file.read()
-# test = test_file.read()
-
 target_words = target_file.read().split()
 test_words = test_file.read().split()
 
-# test = '힣'
-# test_byte = test.encode('utf-8')
+table_size = 997
+target_table = HashTable(table_size)
+test_table = HashTable(table_size)
 
-# for i in range(len(test_byte)):
-#     print(test_byte[i])
+target_table.mappingTable(target_words)
+test_table.mappingTable(test_words)
 
-# value = 0
-# for i in range(len(test_byte)) :
-#     print(test_byte[i])
-#     value += test_byte[i]
-# print("value = ",value)
+target_arr = []
+for i in range(target_table.len()):
+    if not target_table.isBucketEmpty(i) and not test_table.isBucketEmpty(i):
+        target_arr.append((i, target_table.bucketLen(i)))  # (해시값, 버킷의 원소수)
 
-table_size = 4000
-table = Dic(table_size)
+def merge_sort(arr):
+    if len(arr) < 2:
+        return arr
 
-for word in target_words :
-    # print(word)
-    word_byte = word.encode('utf-8')
-    hash = 0
-    for i in range(len(word_byte)) :
-        hash = (word_byte[i]+hash) % table_size
-    #print(hash)
+    mid = len(arr) // 2
+    low_arr = merge_sort(arr[:mid])
+    high_arr = merge_sort(arr[mid:])
 
-    # 단어 해시 값 테이블에 매핑
-    table.add(hash, word)
-    # table.print()
+    merged_arr = []
+    l = h = 0
+    while l < len(low_arr) and h < len(high_arr):
+        if low_arr[l][1] < high_arr[h][1]:
+            merged_arr.append(low_arr[l])
+            l += 1
+        elif low_arr[l][1] > high_arr[h][1]:
+            merged_arr.append(high_arr[h])
+            h += 1
+        # 테이블 원소의 개수가 같은 경우에는 테스트 테이블의 원소 개수를 비교
+        elif test_table.bucketLen(low_arr[l][0]) < test_table.bucketLen(high_arr[h][0]):
+            merged_arr.append(low_arr[l])
+            l += 1
+        else:
+            merged_arr.append(high_arr[h])
+            h += 1
 
-table.print()
+    merged_arr += low_arr[l:]
+    merged_arr += high_arr[h:]
+    return merged_arr
 
-# TODO : 그 중 버킷에 적은 원소가 들어간 단어 선택 -> 해당 단어의 인덱스 기억해야 함
+target_arr = merge_sort(target_arr)
 
-# TODO : 그 단어를 test에서 찾음 -> 이것도 인덱스 기억
-# 그런데 이 단어가 test에서 2개 이상 이면..? -> 다른 unique word 탐색? || 그냥 앞에 걸로 진행 || 가장 가까운 인덱스 선택(이게 맞을 듯)
+# for i in range(len(target_arr)):
+#     print(target_arr[i][0], target_arr[i][1])
 
-# TODO : 그 단어를 기준으로 target과 test를 앞뒤로 다시 나눠서 똑같은 과정 진행 
-# -> 인덱스를 해시 테이블에 넣을 때 같이 포함해서 넣음, 다음 unique word를 뽑을 때 인덱스 범위가 지금 나뉜 범위와 맞지 않으면 패스
+result_words = ["" for _ in range(len(test_words))]
+visited_target = [False for _ in range(len(target_words))]
+visited_test = [False for _ in range(len(test_words))]
+
+def isAllEqual(bucket):
+    firstWord = bucket[0].word
+    for node in bucket:
+        if node.word != firstWord:
+            return False
+    return True
+
+for hash, num in target_arr:
+    target_bucket = target_table.bucket(hash)
+    test_bucket = test_table.bucket(hash)
+    if len(target_bucket) == len(test_bucket) and \
+        target_bucket[0].word == test_bucket[0].word:
+
+        if isAllEqual(target_bucket) and isAllEqual(test_bucket): 
+            for node in target_bucket:
+                visited_target[node.index] = True
+            for node in test_bucket:
+                visited_test[node.index] = True
+                result_words[node.index] = node.word
+            continue
+           
+        # 142 우리 112 따라 140
+        # 688 정렬이 51 정렬이 148 정렬이 165
+        # 688 정렬이 46 정렬이 137 정맥이 153
+        for i, node in enumerate(target_bucket) :
+            if node.word != test_bucket[i].word:
+                break
+            visited_target[node.index] = True
+            visited_test[test_bucket[i].index] = True
+            result_words[test_bucket[i].index] = test_bucket[i].word
+
+print()
+print(" ".join(result_words))
