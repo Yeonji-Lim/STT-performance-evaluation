@@ -7,7 +7,7 @@ test_file = open("test.txt", 'r')
 # test_words = test_file.read().split()
 
 target_words = "john is holly".split()
-test_words = "holly jeongje john".split() #순서가 바뀌는 경우.. 못잡
+test_words = "holly jeongje john".split()
 
 table_size = 997
 target_table = HashTable(table_size)
@@ -67,6 +67,9 @@ def isAllEqual(bucket):
     return True
 
 for hash, num in target_arr:
+
+    # TODO 앞에서 유니크 단어 뽑았던거 기억해두었다가 지금 target과 test의 인덱스가 구간이 안맞으면 pass
+
     target_bucket = target_table.bucket(hash)
     test_bucket = test_table.bucket(hash)
     if len(target_bucket) == len(test_bucket) and \
