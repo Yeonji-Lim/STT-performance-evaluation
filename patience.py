@@ -12,8 +12,6 @@ def mappingTable(table, words):
         for i in range(len(word_byte)):
             hash = (word_byte[i]+hash) % len(table)
         table[hash].append(Node(word, index))
-        # self.print()
-        # print()
 
 def findWord(words, word):
     for i, target in enumerate(words):
@@ -22,26 +20,29 @@ def findWord(words, word):
     return -1
 
 def patience(target, test):
-
-    result = ""
+    result_words = []
     target_words = target.split()
     test_words = test.split()
 
     if len(target_words) == 0:
         for word in test_words:
-            result += '\033[34m' + word + ' \033[0m'
+            result_words.append('\033[34m' + word + '\033[0m')
+        result = " ".join(result_words)
         return result
     
     if len(test_words) == 0:
         for word in target_words:
-            result += '\033[31m' + word + ' \033[0m'
+            result_words.append('\033[31m' + word + '\033[0m')
+        result = " ".join(result_words)
         return result
 
     if len(target_words) == 1 and len(test_words) == 1:
         if target_words[0] == test_words[0]:
-            result += target_words[0]
+            result_words.append(target_words[0])
         else:
-            result += '\033[31m' + target_words[0] + ' \033[0m' + '\033[34m' + test_words[0] + ' \033[0m'
+            result_words.append('\033[31m' + target_words[0] + '\033[0m')
+            result_words.append('\033[34m' + test_words[0] + '\033[0m')
+        result = " ".join(result_words)
         return result
 
     table_size = 997
@@ -89,100 +90,89 @@ def patience(target, test):
 
     # for i in range(len(target_arr)):
     #     print(target_arr[i][0], target_arr[i][1])
-
-    visited_target = [False for _ in range(len(target_words))]
-    visited_test = [False for _ in range(len(test_words))]
-
-    def isAllEqual(bucket):
-        firstWord = bucket[0].word
-        for node in bucket:
-            if node.word != firstWord:
-                return False
-        return True
     
-    leastOneEqual = False
     target_vq = PriorityQueue()
     test_vq = PriorityQueue()
     for hash, num in target_arr:
-        # if num != 1:
-        #     continue
+        if num != 1 :
+            break
         
-        # if target_words[hash][0].word == test_words[hash][0].word:
-        #     target_idx = target_words[hash][0].index
-        #     testidx = test_words[hash][0].index
-        #     target_range = (0, 0)
-        #     test_rage = (0, 0)
-        #     if len(target_vq) != 0:
-        #         for nodeidx in target_vq:
-        #             if target_idx < nodeidx:
-        #                 target_range[1] = nodeidx
-        #     target_vq.put(target_idx)
-        #     test_vq.put(testidx)
+        if target_table[hash][0].word == test_table[hash][0].word:
+            target_idx = target_table[hash][0].index
+            test_idx = test_table[hash][0].index
+            target_range = [target_idx, target_idx]
+            test_range = [test_idx, test_idx]
+            # 구간 체크
+            if not target_vq.empty() and not test_vq.empty():
+                for nodeidx in target_vq.queue:
+                    if target_idx < nodeidx:
+                        target_range[1] = nodeidx
+                        break
+                    else:
+                        target_range[0] = nodeidx
+                for nodeidx in test_vq.queue:
+                    if test_idx < nodeidx:
+                        test_range[1] = nodeidx
+                        break
+                    else:
+                        test_range[0] = nodeidx
+            # 동일 구간 여부 체크
+            if target_words[target_range[0]] == test_words[test_range[0]] and \
+               target_words[target_range[1]] == test_words[test_range[1]]:
+                target_vq.put(target_idx)
+                test_vq.put(test_idx)
 
-        
-        # TODO 앞에서 유니크 단어 뽑았던거 기억해두었다가 지금 target과 test의 인덱스가 구간이 안맞으면 pass
-
-        target_bucket = target_table[hash]
-        test_bucket = test_table[hash]
-
-        if len(target_bucket) == len(test_bucket) and \
-            target_bucket[0].word == test_bucket[0].word:
-
-            if isAllEqual(target_bucket) and isAllEqual(test_bucket): 
-                leastOneEqual = True
-                for node in target_bucket:
-                    visited_target[node.index] = True
-                for node in test_bucket:
-                    visited_test[node.index] = True
-                continue
-            
-            # 142 우리 112 따라 140
-            # 688 정렬이 51 정렬이 148 정렬이 165
-            # 688 정렬이 46 정렬이 137 정맥이 153
-            for i, node in enumerate(target_bucket) :
-                leastOneEqual = True
-                if node.word != test_bucket[i].word:
-                    break
-                visited_target[node.index] = True
-                visited_test[test_bucket[i].index] = True
-
-    if not leastOneEqual:
+    if target_vq.empty():
         for word in test_words:
             idx = findWord(target_words, word)
             if idx == -1:
-                result += '\033[34m' + word + ' \033[0m'
+                result_words.append('\033[34m'+ word +'\033[0m')
             else:
                 for i in range(idx):
-                    result += '\033[31m' + target_words[i] + ' \033[0m'
+                    result_words.append('\033[31m'+ target_words[i] +'\033[0m')
                     del target_words[i]
-                result += target_words[0]+' '
+                result_words.append(target_words[0])
                 del target_words[0]
         for word in target_words:
-            result += '\033[31m' + word + ' \033[0m'
+            result_words.append('\033[31m'+ word +'\033[0m')
+        result = " ".join(result_words)
         return result
-            
-    i = 0
-    j = 0
-    while i < len(target_words) and j < len(test_words) :
-        if visited_target[i] and visited_test[j]:
-            result += target_words[i] + ' '
-            i += 1
-            j += 1
-            continue
 
+    prei = -1
+    prej = -1
+    i = target_vq.get()
+    j = test_vq.get()
+    while i < len(target_words) and j < len(test_words):
+        if i == prei+1 and j == prej+1:
+            result_words.append(target_words[i])
+            prei = i
+            prej = j
+            if target_vq.empty() or test_vq.empty(): break
+            i = target_vq.get()
+            j = test_vq.get()
+            continue
         new_target = ""
         new_test = ""
-        while i < len(target_words) and not visited_target[i]:
-            new_target += target_words[i]+' '
-            i+=1
-        while j < len(test_words) and not visited_test[j]:
-            new_test += test_words[j]+' '
-            j+=1
-        result += patience(new_target, new_test)
+        for k in range(prei+1, i):
+            new_target += target_words[k]+' '
+        for k in range(prej+1, j):
+            new_test += test_words[k]+' '
+        result_words.append(patience(new_target, new_test).rstrip())
+        prei = i-1
+        prej = j-1
+
+    new_target = ""
+    new_test = ""
+    for k in range(i+1, len(target_words)):
+        new_target += target_words[k]+" "
+    for k in range(j+1, len(test_words)):
+        new_test += test_words[k]+" "
+    result_words.append(patience(new_target, new_test).rstrip())
     
+    result = " ".join(result_words)
     return result
 
-target = open("target.txt", 'r').read()
-test = open("test.txt", 'r').read()
+target = open("data/알고리즘강의_target.txt", 'r').read()
+test = open("data/알고리즘강의_test.txt", 'r').read()
 
 print(patience(target, test))
