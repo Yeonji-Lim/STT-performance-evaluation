@@ -1,5 +1,11 @@
 from queue import PriorityQueue
 
+def testOnly(word):
+    return '\033[34m' + word + '\033[0m'
+
+def targetOnly(word):
+    return '\033[31m' + word + '\033[0m'
+
 class Node:
     def __init__(self, word=None, index=None):
         self.word = word
@@ -26,13 +32,13 @@ def patience(target, test):
 
     if len(target_words) == 0:
         for word in test_words:
-            result_words.append('\033[34m' + word + '\033[0m')
+            result_words.append(testOnly(word))
         result = " ".join(result_words)
         return result
     
     if len(test_words) == 0:
         for word in target_words:
-            result_words.append('\033[31m' + word + '\033[0m')
+            result_words.append(targetOnly(word))
         result = " ".join(result_words)
         return result
 
@@ -40,8 +46,8 @@ def patience(target, test):
         if target_words[0] == test_words[0]:
             result_words.append(target_words[0])
         else:
-            result_words.append('\033[31m' + target_words[0] + '\033[0m')
-            result_words.append('\033[34m' + test_words[0] + '\033[0m')
+            result_words.append(targetOnly(target_words[0]))
+            result_words.append(testOnly(test_words[0]))
         result = " ".join(result_words)
         return result
 
@@ -126,15 +132,15 @@ def patience(target, test):
         for word in test_words:
             idx = findWord(target_words, word)
             if idx == -1:
-                result_words.append('\033[34m'+ word +'\033[0m')
+                result_words.append(testOnly(word))
             else:
                 for i in range(idx):
-                    result_words.append('\033[31m'+ target_words[i] +'\033[0m')
+                    result_words.append(targetOnly(target_words[i]))
                     del target_words[i]
                 result_words.append(target_words[0])
                 del target_words[0]
         for word in target_words:
-            result_words.append('\033[31m'+ word +'\033[0m')
+            result_words.append(targetOnly(word))
         result = " ".join(result_words)
         return result
 
