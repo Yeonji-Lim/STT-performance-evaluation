@@ -14,8 +14,8 @@ def clean_text(input_string):
 start = time.time()
 
 # txt파일 일기
-f1 = open("target.txt", "r", encoding='UTF8')
-f2 = open("test.txt", "r", encoding='UTF8')
+f1 = open("5분_target.txt", "r", encoding='UTF8')
+f2 = open("5분_test.txt", "r", encoding='UTF8')
 
 # 줄바꿈 삭제
 s1 = f1.read().replace("\n", " ")
