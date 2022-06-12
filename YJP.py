@@ -1,24 +1,39 @@
 from queue import PriorityQueue
+import re
+import time
 
+# 파란 글씨 : 테스트에만 있는 단어
 def testOnly(word):
     return '\033[34m' + word + '\033[0m'
 
+# 빨간 글씨 : 타깃에만 있는 단어
 def targetOnly(word):
     return '\033[31m' + word + '\033[0m'
 
+# () 및 괄호 안 내용 삭제, 특수문자 모두 제거 함수
+def clean_text(input_string):
+    #특수 문자 제거
+    text_rmv = re.sub('[^A-Za-z0-9가-힣 ]', '', input_string)
+    return text_rmv
+
+# 버킷에 들어가는 노드
 class Node:
     def __init__(self, word=None, index=None):
         self.word = word
         self.index = index
 
+# 해시 테이블 매핑
 def mappingTable(table, words):
     for index, word in enumerate(words):
+        # utf-8 인코딩으로 바꿔주기
         word_byte = word.encode('utf-8')
+        # 
         hash = 0
         for i in range(len(word_byte)):
             hash = (word_byte[i]+hash) % len(table)
         table[hash].append(Node(word, index))
 
+# 단어 배열에서 단어 찾기
 def findWord(words, word):
     for i, target in enumerate(words):
         if target == word:
@@ -93,9 +108,6 @@ def patience(target, test):
         return merged_arr
 
     target_arr = merge_sort(target_arr)
-
-    # for i in range(len(target_arr)):
-    #     print(target_arr[i][0], target_arr[i][1])
     
     target_vq = PriorityQueue()
     test_vq = PriorityQueue()
@@ -128,19 +140,27 @@ def patience(target, test):
                 target_vq.put(target_idx)
                 test_vq.put(test_idx)
 
+    # 일치하는 부분이 없는 경우
     if target_vq.empty():
-        for word in test_words:
+        for word in test_words: # test에 있는 단어 각각에 대해서
+            # target에 해당 단어가 있는 지 확인
             idx = findWord(target_words, word)
-            if idx == -1:
+            if idx == -1: # target에 없는 경우 : test에만 있는 단어
                 result_words.append(testOnly(word))
             else:
-                for i in range(idx):
-                    result_words.append(targetOnly(target_words[i]))
-                    del target_words[i]
+                # 찾은 단어보다 앞에 있는 target 단어 : target에만 있는 단어 
+                while target_words[0] != word: 
+                    result_words.append(targetOnly(target_words[0]))
+                    # 추가하고 삭제
+                    del target_words[0]
+                # 남은 가장 앞의 단어가 실제 일치한 단어
                 result_words.append(target_words[0])
+                # 추가하고 삭제
                 del target_words[0]
+        # 남은 target 단어 : target에만 있는 단어
         for word in target_words:
             result_words.append(targetOnly(word))
+        # 결과 반환
         result = " ".join(result_words)
         return result
 
@@ -178,7 +198,11 @@ def patience(target, test):
     result = " ".join(result_words)
     return result
 
-target = open("data/알고리즘강의_target.txt", 'r').read()
-test = open("data/알고리즘강의_test.txt", 'r').read()
+start = time.time()
+
+target = clean_text(open("target.txt", 'r').read())
+test = clean_text(open("test.txt", 'r').read())
 
 print(patience(target, test))
+
+print(time.time()-start)

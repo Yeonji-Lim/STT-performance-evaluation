@@ -1,14 +1,26 @@
 # -*- coding: utf-8 -*-
 import re
 import sys
+import time
 
 sys.setrecursionlimit(10 ** 6)
+
+# () 및 괄호 안 내용 삭제, 특수문자 모두 제거 함수
+def clean_text(input_string):
+    #() 및 괄호 안 내용 삭제
+    regex = "\(.*\)|\s-\s.*"
+    text_rmv = re.sub(regex, '', input_string)
+    #특수 문자 제거
+    text_rmv = re.sub('[^A-Za-z0-9가-힣 ]', '', text_rmv)
+    return text_rmv
+
+start = time.time()
 
 file1 = open("target.txt","r",encoding='UTF8')
 file2 = open("test.txt","r",encoding='UTF8')
 
-T_target = file1.read().splitlines()
-T_test = file2.read().splitlines()
+T_target = clean_text(file1.read()).splitlines()
+T_test = clean_text(file2.read()).splitlines()
 
 T_list_output = [] 
 
@@ -132,3 +144,5 @@ for q in T_list_output:
             print('\033[31m'+r[0]+'\033[0m', end= '')
         else:         # 파란색
             print('\033[34m'+r[0]+'\033[0m', end =' ')
+
+print(time.time()-start)

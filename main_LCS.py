@@ -1,17 +1,7 @@
 import re
-import algorithm1
+import time
+import LCS
 
-<<<<<<< HEAD
-def clean_text(inputString):
-  text_rmv = re.sub('[-=+,#/\?:^.@*\"※~ㆍ!』‘|\(\)\[\]`\'…》\”\“\’·]', ' ', inputString)
-  return text_rmv
-
-f = open("data/부럽지가않어_target.txt", 'r')
-# s = clean_text(f.read().replace("\n", ""))
-s = f.read()
-for sent in kss.split_sentences(s):
-    print(sent)
-=======
 # () 및 괄호 안 내용 삭제, 특수문자 모두 제거 함수
 def clean_text(input_string):
     #() 및 괄호 안 내용 삭제
@@ -20,7 +10,8 @@ def clean_text(input_string):
     #특수 문자 제거
     text_rmv = re.sub('[^A-Za-z0-9가-힣 ]', '', text_rmv)
     return text_rmv
->>>>>>> lcs
+
+start = time.time()
 
 # txt파일 일기
 f1 = open("target.txt", "r", encoding='UTF8')
@@ -34,7 +25,9 @@ s2 = f2.read().replace("\n", " ")
 s1 = clean_text(s1)
 s2 = clean_text(s2)
 
-algorithm1.lcs(s1,s2)
+LCS.lcs(s1,s2)
+
+print(time.time()-start)
 
 # 읽기 종료
 f1.close()
