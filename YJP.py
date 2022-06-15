@@ -230,8 +230,8 @@ def YJP(target, test):
 # 알고리즘 시작 시간
 start = time.time()
 
-target = clean_text(open("5분_target.txt", 'r').read())
-test = clean_text(open("5분_test.txt", 'r').read())
+target = clean_text(open("1분_target.txt", 'r').read())
+test = clean_text(open("1분_test.txt", 'r').read())
 
 # 결과 출력
 print(YJP(target, test))

@@ -16,8 +16,8 @@ def clean_text(input_string):
 
 start = time.time()
 
-file1 = open("5분_target.txt","r",encoding='UTF8')
-file2 = open("5분_test.txt","r",encoding='UTF8')
+file1 = open("1분_target.txt","r",encoding='UTF8')
+file2 = open("1분_test.txt","r",encoding='UTF8')
 
 T_target = clean_text(file1.read()).splitlines()
 T_test = clean_text(file2.read()).splitlines()
